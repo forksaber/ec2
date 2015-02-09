@@ -1,0 +1,72 @@
+#!/usr/bin/env ruby 
+Signal.trap("INT") { exit 1 }
+
+require 'optparse'
+require 'ec2/version'
+require 'ec2/error'
+require 'ec2/logger'
+
+logger = ::Ec2::Logger.logger
+options = {}
+
+opts_parser = OptionParser.new do |opts| 
+    
+    banner = [] 
+    banner << "Usage: ec2 [global options] command [options] args"
+    banner << "Commands:"
+    banner << "    hosts"
+    
+    banner << "Options: "
+    opts.banner = banner.join("\n")
+
+    opts.on("-v", "--version", "Show version") do |v|
+      puts ::Ec2::VERSION
+      exit
+    end
+
+    opts.on("--debug", "Show debug messages") do
+      options[:debug] = true
+      logger.level = ::Logger::DEBUG
+    end
+
+    opts.on("--trace", "Show debug messages and exception stack trace") do
+      options[:debug] = true
+      options[:trace] = true
+      logger.level = ::Logger::DEBUG
+      logger.trace = true
+    end
+
+    opts.on_tail("-h", "--help", "Show this message") do 
+      puts opts
+      exit
+    end 
+end
+begin
+  opts_parser.order!(ARGV)
+  command = ( ARGV.shift || '').to_sym
+  case command
+  when :hosts
+    require 'ec2/cli/hosts'
+    cli = ::Ec2::Cli::Hosts.new(ARGV)
+    cli.run
+  when :resources
+    require 'ec2/cli/resources'
+    cli = ::Ec2::Cli::Resources.new(ARGV)
+    cli.run
+  when :''
+    puts opts_parser
+  else
+    raise ::Ec2::Error, "no such command #{command}"
+  end
+
+rescue OptionParser::InvalidOption, OptionParser::MissingArgument, Ec2::Error => e
+  cause = e.cause
+  if options[:trace]
+    puts cause
+    cause ? (raise cause) : (raise e)
+  else
+    logger.debug "#{cause.message}" if cause
+    logger.error "#{e.message}"
+    abort
+  end
+end
