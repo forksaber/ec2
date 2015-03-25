@@ -1,8 +1,10 @@
 require 'ec2/helper'
+require 'ec2/logger'
 module Ec2
   class Subnet
 
     include Helper
+    include Logger
 
     def initialize(name, vpc_id: nil)
       error "vpc_id not specified for subnet" if not vpc_id
@@ -40,8 +42,8 @@ module Ec2
         cidr_block: @cidr,
         availability_zone: @availability_zone
       )
-      @id = resp.subnet_id
-      logger.info "(#{@name}) created subnet" 
+      @id = resp.subnet.subnet_id
+      logger.info "(#{@name}) created subnet: #{@cidr}" 
     rescue Aws::Errors::ServiceError, ArgumentError
       error "while creating subnet #{@name}"
     end
@@ -50,6 +52,7 @@ module Ec2
       subnet.create_tags(
         tags: [ { key: "Name", value: @name } ]
       )
+      subnet.load
     end
 
     def tagged?
