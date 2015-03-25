@@ -22,7 +22,6 @@ module Ec2
       subnet.created &block
     end
 
-
     def apply
       instance_eval(File.read(@file), @file)
     end
