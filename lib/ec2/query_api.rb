@@ -13,12 +13,22 @@ module Ec2
 
     def security_group(name)
       security_group = SecurityGroup.new(name, vpc_id: @vpc_id)
-      security_group.id!
+      sg_cache[name] ||= security_group.id!
     end
 
     def subnet(name)
       subnet = Subnet.new(name, vpc_id: @vpc_id)
-      subnet.id!
+      subnet_cache[name] ||= subnet.id!
+    end
+
+    private
+
+    def sg_cache
+      @sg_cache ||= {}
+    end
+
+    def subnet_cache
+      @subnet_cache ||= {}
     end
 
   end
