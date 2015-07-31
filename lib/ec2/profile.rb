@@ -53,6 +53,22 @@ module Ec2
       names.each { |name| security_group name, interface: interface }
     end
 
+    def volume(device:, type: "gp2", size:)
+      @data["volumes"] ||= []
+      volumes = @data["volumes"]
+      volume = {
+        "device" => device,
+        "type" => type,
+        "size" => size
+      }
+      existing_volume = volumes.find { |v| v["device"] == device }
+      if existing_volume
+        existing_volume.merge! volume
+      else
+        volumes << volume
+      end
+    end
+
     private
 
     def deep_copy(hash)
