@@ -32,8 +32,10 @@ module Ec2
     private
 
     def init_aws
-      credentials = Aws::Credentials.new(config[:aws_key], config[:aws_secret])
-      Aws.config[:credentials] = credentials
+      if not config[:use_iam]
+        credentials = Aws::Credentials.new(config[:aws_key], config[:aws_secret])
+        Aws.config[:credentials] = credentials
+      end
       Aws.config[:region] = config[:region]
     end
 

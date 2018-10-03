@@ -12,6 +12,7 @@ module Ec2
       return @config if @config
       @config = {
         region: "ap-southeast-1",
+        use_iam: true
       }
       read_config
       return @config
@@ -29,10 +30,12 @@ module Ec2
 
     def aws_key(aws_key)
       set :aws_key, aws_key
+      set :use_iam, false
     end
 
     def aws_secret(aws_secret)
       set :aws_secret, aws_secret
+      set :use_iam, false
     end
 
     def set(key, value)

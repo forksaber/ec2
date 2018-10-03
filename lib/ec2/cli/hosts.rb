@@ -27,7 +27,7 @@ module Ec2
       end
 
       def config
-        @config ||= ::Ec2::Config.new("ec2.conf").config
+        @config ||= ::Ec2::Config.new("ec2.rb").config
       end
 
       def opts

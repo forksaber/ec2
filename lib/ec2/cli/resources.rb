@@ -24,15 +24,16 @@ module Ec2
         @lock ||= ::Ec2::Lock.new
       end
 
-
       def init_aws
-        credentials = Aws::Credentials.new(config[:aws_key], config[:aws_secret])
-        Aws.config[:credentials] = credentials
+        if not config[:use_iam]
+          credentials = Aws::Credentials.new(config[:aws_key], config[:aws_secret])
+          Aws.config[:credentials] = credentials
+        end
         Aws.config[:region] = config[:region]
       end
 
       def config
-        @config ||= ::Ec2::Config.new("ec2.conf").config
+        @config ||= ::Ec2::Config.new("ec2.rb").config
       end
 
       def opts
