@@ -1,6 +1,6 @@
 require 'ec2/helper'
 require 'ec2/logger'
-require 'aws-sdk'
+require 'aws-sdk-ec2'
 require 'set'
 
 module Ec2

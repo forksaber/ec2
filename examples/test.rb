@@ -2,7 +2,7 @@ require 'pry'
 lib = File.expand_path(__dir__ + '/../lib')
 $LOAD_PATH.unshift(lib) 
 
-require 'aws-sdk'
+require 'aws-sdk-ec2'
 require 'ec2/config'
 require 'ec2/query_api'
 require 'ec2/profile_dsl'
